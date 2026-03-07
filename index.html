@@ -86,7 +86,7 @@ margin-top:20px;
 
 <br>
 
-<button onclick="ulang()">MULAI ULANG</button>
+<button id="btnUlang" onclick="ulang()" style="display:none">MULAI ULANG</button>
 
 </div>
 
@@ -294,6 +294,7 @@ document.getElementById("hasil").innerText=text
 else{
 
 document.getElementById("hasil").innerText="Menunggu persetujuan lawan"
+document.getElementById("btnUlang").style.display="block"
 
 }
 
@@ -319,3 +320,4 @@ location.reload()
 </body>
 
 </html>
+
