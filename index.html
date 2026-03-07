@@ -38,6 +38,11 @@ margin-top:20px;
     margin: 20px auto;
     width: 80%;
 }
+#history {
+    font-size: 18px;
+    width: 80%;
+    height: 20vh;
+}
 </style>
 
 </head>
@@ -82,7 +87,7 @@ margin-top:20px;
 
 <button onclick="tambah()">CATAT</button>
 
-<div id="history"></div>
+<textarea id="history" readonly></textarea>
 
 <br>
 
@@ -92,7 +97,7 @@ margin-top:20px;
 
 <br>
 
-<button id="btnUlang" onclick="ulang()" style="display:none">MULAI ULANG</button>
+<button id="btnUlang" onclick="ulang()" style="display: none">MULAI ULANG</button>
 
 </div>
 
@@ -245,11 +250,9 @@ let text=document.getElementById("note").value
 
 if(text=="") return
 
-let div=document.createElement("div")
+let history=document.getElementById("history")
 
-div.innerText=text
-
-document.getElementById("history").appendChild(div)
+history.value = text + "\n" + history.value
 
 document.getElementById("note").value=""
 
@@ -279,7 +282,7 @@ let players=d.val()
 
 let text=""
 
-text+="Angka Kamu : "+players[player]+"<br>"
+text+="Angka Kamu : "+players[player]+"\n"
 
 for(let p in players){
 
@@ -291,7 +294,7 @@ text+="Angka Lawan : "+players[p]
 
 }
 
-document.getElementById("hasil").innerHTML=text
+document.getElementById("hasil").innerText=text
 document.getElementById("btnUlang").style.display="block"
 
 })
@@ -325,9 +328,4 @@ location.reload()
 </script>
 
 </body>
-
 </html>
-
-
-
-
