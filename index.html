@@ -262,39 +262,54 @@ document.getElementById("note").value=""
 
 /* ================= [REVEAL NUMBER] ================= */
 
-function lihat() {
-  db.ref("rooms/" + room + "/reveal/" + player)
-    .set(true)
-    .then(() => {
-      // baru baca reveal setelah set selesai
-      db.ref("rooms/" + room + "/reveal").once("value", function(data) {
-        let val = data.val();
-        if (!val) return;
+function lihat(){
 
-        let jumlah = Object.keys(val).length;
+db.ref("rooms/"+room+"/reveal/"+player).set(true)
 
-        if (jumlah >= 2) {
-          db.ref("rooms/" + room + "/players").once("value", function(d) {
-            let players = d.val();
-            let text = "";
+db.ref("rooms/"+room+"/reveal").once("value",function(data){
 
-            text += "Angka Kamu : " + players[player] + "\n";
+let val=data.val()
 
-            for (let p in players) {
-              if (p != player) {
-                text += "Angka Lawan : " + players[p];
-              }
-            }
+if(!val) return
 
-            document.getElementById("hasil").innerText = text;
-            document.getElementById("btnUlang").style.display = "block";
-          });
-        } else {
-          document.getElementById("hasil").innerText = "Menunggu persetujuan lawan";
-          document.getElementById("btnUlang").style.display = "none";
-        }
-      });
-    });
+let jumlah=Object.keys(val).length
+
+if(jumlah>=2){
+
+db.ref("rooms/"+room+"/players").once("value",function(d){
+
+let players=d.val()
+
+let text=""
+
+text+="Angka Kamu : "+players[player]+"\n"
+
+for(let p in players){
+
+if(p!=player){
+
+text+="Angka Lawan : "+players[p]
+
+}
+
+}
+
+document.getElementById("hasil").innerText=text
+document.getElementById("btnUlang").style.display="block"
+
+})
+
+}
+
+else{
+
+document.getElementById("hasil").innerText="Menunggu persetujuan lawan"
+document.getElementById("btnUlang").style.display="none"
+
+}
+
+})
+
 }
 
 
@@ -314,4 +329,5 @@ location.reload()
 
 </body>
 </html>
+
 
