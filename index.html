@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catatan Tebak Angka</title>
+
+<!-- ================= [UI STYLE] ================= -->
+<style>
+body{
+font-family:Arial;
+background:#f2f2f2;
+text-align:center;
+padding:20px;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:10px;
+max-width:400px;
+margin:auto;
+}
+
+input,button{
+font-size:18px;
+padding:10px;
+margin:5px;
+width:80%;
+}
+
+#history{
+text-align:left;
+margin-top:20px;
+}
+</style>
+
+</head>
+<body>
+
+
+<!-- ================= [UI SETUP SCREEN] ================= -->
+<div class="card" id="awal">
+
+<h2>Masukkan Angka Rahasia</h2>
+
+<input id="angka" type="number" placeholder="angka kamu">
+
+<p id="roomInfo"></p>
+
+<button onclick="copyLink()">Copy Link Undangan</button>
+
+<br>
+
+<button onclick="mulai()">READY</button>
+
+</div>
+
+
+
+<!-- ================= [UI GAME SCREEN] ================= -->
+<div class="card" id="game" style="display:none">
+
+<h2>Angka Saya</h2>
+
+<h1 id="angkaSaya"></h1>
+
+<p id="statusLawan">Menunggu lawan...</p>
+
+<hr>
+
+<h3>Catatan Tebakan</h3>
+
+<input id="note" placeholder="contoh: 52 benar 1">
+
+<br>
+
+<button onclick="tambah()">CATAT</button>
+
+<div id="history"></div>
+
+<br>
+
+<button onclick="lihat()">BUKA ANGKA</button>
+
+<p id="hasil"></p>
+
+<br>
+
+<button onclick="ulang()">MULAI ULANG</button>
+
+</div>
+
+
+
+<!-- ================= [FIREBASE LIBRARY] ================= -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+
+
+<script>
+
+
+/* ================= [SETUP FIREBASE] ================= */
+
+const firebaseConfig = {
+apiKey: "AIzaSyBOTIkU6oawhCH8Opl7dwP8i71PsPnpQNU",
+authDomain: "tebak-angka-ae51b.firebaseapp.com",
+databaseURL: "https://tebak-angka-ae51b-default-rtdb.firebaseio.com",
+projectId: "tebak-angka-ae51b",
+storageBucket: "tebak-angka-ae51b.firebasestorage.app",
+messagingSenderId: "359512788969",
+appId: "1:359512788969:web:d5337aa7acddf5b6914578"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.database();
+
+
+
+/* ================= [ROOM SYSTEM] ================= */
+
+const params = new URLSearchParams(window.location.search)
+
+let room = params.get("room")
+
+if(!room){
+
+room = Math.floor(1000 + Math.random()*9000)
+
+window.location.search="?room="+room
+
+}
+
+document.getElementById("roomInfo").innerText="Room: "+room
+
+
+
+/* ================= [PLAYER DATA] ================= */
+
+let angkaSaya=""
+let player=""
+
+
+
+/* ================= [ROOM INVITE] ================= */
+
+function copyLink(){
+
+navigator.clipboard.writeText(window.location.href)
+
+alert("Link room disalin, kirim ke pacar kamu")
+
+}
+
+
+
+/* ================= [GAME START] ================= */
+
+function mulai(){
+
+angkaSaya=document.getElementById("angka").value
+
+if(angkaSaya=="") return
+
+db.ref("rooms/"+room+"/players").once("value",function(data){
+
+let players=data.val()
+
+if(!players){
+
+player="player1"
+
+}
+else if(!players.player2){
+
+player="player2"
+
+}
+else{
+
+alert("Room sudah penuh")
+
+return
+
+}
+
+db.ref("rooms/"+room+"/players/"+player).set(angkaSaya)
+
+document.getElementById("awal").style.display="none"
+document.getElementById("game").style.display="block"
+
+document.getElementById("angkaSaya").innerText=angkaSaya
+
+cekPlayer()
+
+})
+
+}
+
+
+
+/* ================= [PLAYER STATUS] ================= */
+
+function cekPlayer(){
+
+db.ref("rooms/"+room+"/players").on("value",function(data){
+
+let players=data.val()
+
+if(!players) return
+
+let jumlah=Object.keys(players).length
+
+if(jumlah>=2){
+
+document.getElementById("statusLawan").innerText="Lawan sudah siap"
+
+}
+
+else{
+
+document.getElementById("statusLawan").innerText="Menunggu lawan..."
+
+}
+
+})
+
+}
+
+
+
+/* ================= [GAME NOTE SYSTEM] ================= */
+
+function tambah(){
+
+let text=document.getElementById("note").value
+
+if(text=="") return
+
+let div=document.createElement("div")
+
+div.innerText=text
+
+document.getElementById("history").appendChild(div)
+
+document.getElementById("note").value=""
+
+}
+
+
+
+/* ================= [REVEAL NUMBER] ================= */
+
+function lihat(){
+
+db.ref("rooms/"+room+"/reveal/"+player).set(true)
+
+db.ref("rooms/"+room+"/reveal").once("value",function(data){
+
+let val=data.val()
+
+if(!val) return
+
+let jumlah=Object.keys(val).length
+
+if(jumlah>=2){
+
+db.ref("rooms/"+room+"/players").once("value",function(d){
+
+let players=d.val()
+
+let text=""
+
+text+="Angka Kamu : "+players[player]+"\n"
+
+for(let p in players){
+
+if(p!=player){
+
+text+="Angka Lawan : "+players[p]
+
+}
+
+}
+
+document.getElementById("hasil").innerText=text
+
+})
+
+}
+
+else{
+
+document.getElementById("hasil").innerText="Menunggu persetujuan lawan"
+
+}
+
+})
+
+}
+
+
+
+/* ================= [RESET GAME] ================= */
+
+function ulang(){
+
+db.ref("rooms/"+room).remove()
+
+location.reload()
+
+}
+
+
+</script>
+
+</body>
+</html>
