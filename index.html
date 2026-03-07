@@ -273,7 +273,7 @@ let players=d.val()
 
 let text=""
 
-text+="Angka Kamu : "+players[player]+"\n"
+text+="Angka Kamu : "+players[player]+"<br>"
 
 for(let p in players){
 
@@ -285,7 +285,7 @@ text+="Angka Lawan : "+players[p]
 
 }
 
-document.getElementById("hasil").innerText=text
+document.getElementById("hasil").innerHTML=text
 document.getElementById("btnUlang").style.display="block"
 
 })
@@ -320,5 +320,6 @@ location.reload()
 </body>
 
 </html>
+
 
 
