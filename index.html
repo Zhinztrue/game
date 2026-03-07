@@ -266,7 +266,7 @@ function lihat(){
 
 db.ref("rooms/"+room+"/reveal/"+player).set(true)
 
-db.ref("rooms/"+room+"/reveal").once("value",function(data){
+db.ref("rooms/"+room+"/reveal").on("value",function(data){
 
 let val=data.val()
 
@@ -329,5 +329,6 @@ location.reload()
 
 </body>
 </html>
+
 
 
