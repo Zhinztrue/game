@@ -18,7 +18,7 @@ padding: 20px;
 }
 
 .card{
-background-image: linear-gradient(rgba(3, 3, 3, 0.4), rgba(0,0,0,0.4)), url(bg.jpeg);
+background-image: linear-gradient(rgba(3, 3, 3, 0.4), rgba(0,0,0,0.4));
 background-size: cover;
 background-position: center;
 background-repeat: no-repeat;
@@ -335,7 +335,28 @@ document.getElementById("btnUlang").style.display="none"
 
 }
 
+/* ================= [Ganti Background] ================= */
 
+function gantiCardBg(){
+
+const bg=[
+"bg.jpeg",
+"bg1.jpeg",
+"bg2.jpeg",
+"bg3.jpeg",
+"bg4.jpeg",
+"bg5.jpeg",
+"bg6.jpeg"
+]
+
+let random=Math.floor(Math.random()*bg.length)
+
+document.querySelectorAll(".card").forEach(c=>{
+c.style.backgroundImage =
+"linear-gradient(rgba(3,3,3,0.4), rgba(0,0,0,0.4)), url('"+bg[random]+"')"
+})
+
+}
 
 /* ================= [RESET GAME] ================= */
 
@@ -347,11 +368,16 @@ location.reload()
 
 }
 
+ window.onload = function(){
+gantiCardBg()
+}
+
 
 </script>
 
 </body>
 </html>
+
 
 
 
